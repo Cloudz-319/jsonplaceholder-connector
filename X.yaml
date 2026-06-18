@@ -1,101 +1,60 @@
 skill: jsonplaceholder-connector
 version: "0.1.0"
+
 catalog:
-  kind: graph
-  audience: operator
+  kind: skill
+  audience: public
   visibility: public
   role: canonical
+
 runners:
-  read:
-    default: true
-    type: graph
+  jsonplaceholder-read:
+    type: agent-task
+    agent: operator
+    task: jsonplaceholder-read
+    outputs:
+      response: object
+    artifacts:
+      wrap_as: jsonplaceholder_read
+      packet: runx.jsonplaceholder.v1
+    runx:
+      category: data
     inputs:
       resource:
         type: string
         required: true
-        description: Resource type (posts, comments, albums, photos, todos, users)
+        description: "Resource type (posts, comments, albums, photos, todos, users)."
       id:
         type: integer
         required: false
-        description: Resource ID for single-item fetch
+        description: "Resource ID for single-item fetch."
       query_params:
         type: object
         required: false
-        description: Query string parameters for list operations
-    graph:
-      name: jsonplaceholder-read
-      steps:
-        - id: preflight-read
-          tool: jsonplaceholder.preflight
-          inputs:
-            method: GET
-            path: "<< inputs.resource >>"
-            id: "<< inputs.id >>"
-          outputs:
-            status: $step.status
-        - id: execute-read
-          tool: jsonplaceholder.adapter
-          inputs:
-            method: GET
-            resource: "<< inputs.resource >>"
-            id: "<< inputs.id >>"
-            query_params: "<< inputs.query_params >>"
-          gate:
-            posture: default-allow
-            reason: Read operations complete without operator approval
-          outputs:
-            status_code: $step.status_code
-            response_summary: $step.response_summary
-  mutate:
-    type: graph
+        description: "Query string parameters."
+
+  jsonplaceholder-mutate:
+    type: agent-task
+    agent: operator
+    task: jsonplaceholder-mutate
+    outputs:
+      response: object
+    artifacts:
+      wrap_as: jsonplaceholder_mutation
+      packet: runx.jsonplaceholder.v1
+    runx:
+      category: data
     inputs:
       resource:
         type: string
         required: true
-        description: Resource type (posts, comments, albums, photos, todos, users)
-      id:
-        type: integer
-        required: false
-        description: Resource ID for update/delete
-      payload:
-        type: object
-        required: false
-        description: Request body for POST/PUT/PATCH operations
+        description: "Resource type."
       operation:
         type: string
         required: true
         enum: [POST, PUT, PATCH, DELETE]
-        description: HTTP method for the mutation
-    graph:
-      name: jsonplaceholder-mutate
-      steps:
-        - id: preflight-mutate
-          tool: jsonplaceholder.preflight
-          inputs:
-            method: "<< inputs.operation >>"
-            path: "<< inputs.resource >>"
-            id: "<< inputs.id >>"
-          outputs:
-            status: $step.status
-        - id: approval-gate
-          tool: runx.approval-pause
-          inputs:
-            message: "Mutate << inputs.operation >> << inputs.resource >>"
-            details:
-              resource: "<< inputs.resource >>"
-              id: "<< inputs.id >>"
-              operation: "<< inputs.operation >>"
-              payload_digest: "<< digest(inputs.payload) >>"
-          gate:
-            posture: operator-approval
-            reason: Mutating operations on external API require operator review
-        - id: execute-mutate
-          tool: jsonplaceholder.adapter
-          inputs:
-            method: "<< inputs.operation >>"
-            resource: "<< inputs.resource >>"
-            id: "<< inputs.id >>"
-            payload: "<< inputs.payload >>"
-          outputs:
-            status_code: $step.status_code
-            response_summary: $step.response_summary
+        description: "HTTP method."
+      payload:
+        type: object
+        required: false
+        description: "Request body."
