@@ -6,55 +6,23 @@ catalog:
   audience: public
   visibility: public
   role: canonical
-
-runners:
-  jsonplaceholder-read:
-    type: agent-task
-    agent: operator
-    task: jsonplaceholder-read
-    outputs:
-      response: object
-    artifacts:
-      wrap_as: jsonplaceholder_read
-      packet: runx.jsonplaceholder.v1
-    runx:
-      category: data
-    inputs:
-      resource:
-        type: string
-        required: true
-        description: "Resource type (posts, comments, albums, photos, todos, users)."
-      id:
-        type: integer
-        required: false
-        description: "Resource ID for single-item fetch."
-      query_params:
-        type: object
-        required: false
-        description: "Query string parameters."
-
-  jsonplaceholder-mutate:
-    type: agent-task
-    agent: operator
-    task: jsonplaceholder-mutate
-    outputs:
-      response: object
-    artifacts:
-      wrap_as: jsonplaceholder_mutation
-      packet: runx.jsonplaceholder.v1
-    runx:
-      category: data
-    inputs:
-      resource:
-        type: string
-        required: true
-        description: "Resource type."
-      operation:
-        type: string
-        required: true
-        enum: [POST, PUT, PATCH, DELETE]
-        description: "HTTP method."
-      payload:
-        type: object
-        required: false
-        description: "Request body."
+policy:
+      scopes:
+        jsonplaceholder:read:
+          class: read
+          default: allow
+          description: Read-only access to JSONPlaceholder resources
+        jsonplaceholder:write:
+          class: mutate
+          default: require-approval
+          description: Mutating operations require operator approval
+    emits:
+      - action: jsonplaceholder.read.complete
+        description: Emitted when a read operation completes
+        payload: {status_code: integer, response_summary: string}
+      - action: jsonplaceholder.write.gated
+        description: Emitted when a write operation reaches approval gate
+        payload: {operation: string, resource: string}
+      - action: jsonplaceholder.write.complete
+        description: Emitted when a write operation completes after approval
+        payload: {status_code: integer, created_id: integer}
