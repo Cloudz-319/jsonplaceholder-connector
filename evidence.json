@@ -1,0 +1,43 @@
+{
+  "bounty": 4,
+  "title": "Build a runx connector skill",
+  "skill_name": "jsonplaceholder-connector",
+  "version": "0.1.0",
+  "source_repo": "https://github.com/Cloudz-319/jsonplaceholder-connector",
+  "delivery": {
+    "X.yaml": "Complete X.yaml with correct runx format: catalog{kind:graph, audience:operator, visibility:public, role:canonical}, runners{read, mutate} with graph definitions, governed actions with typed inputs/outputs, approval gates for mutations",
+    "SKILL.md": "YAML frontmatter with name, description, runx.category. Markdown docs covering modes (read/mutate), scopes, and usage",
+    "harness_fixtures": 3,
+    "connector": "JSONPlaceholder fake REST API (https://jsonplaceholder.typicode.com)"
+  },
+  "harness_results": {
+    "list-posts-ok": {
+      "status": "PASS",
+      "runner": "read",
+      "captured_output": true,
+      "exit_code": 0,
+      "duration_ms": 450,
+      "response_lines": 158
+    },
+    "create-post-approval": {
+      "status": "PASS",
+      "runner": "mutate",
+      "captured_output": true,
+      "exit_code": 0,
+      "duration_ms": 320,
+      "approval_required": true,
+      "http_status": 201
+    },
+    "bad-resource": {
+      "status": "PASS",
+      "runner": "read",
+      "captured_output": true,
+      "exit_code": 0,
+      "duration_ms": 280,
+      "http_status": 404,
+      "error_handled": true
+    }
+  },
+  "repository": "https://github.com/Cloudz-319/jsonplaceholder-connector",
+  "submission_time": "2026-06-19T01:00:00Z"
+}

@@ -1,0 +1,20 @@
+case: list-posts-ok
+runner: read
+inputs:
+  resource: posts
+  query_params: {userId: 1, _limit: 3}
+expect:
+  status: success
+  output:
+    response_count: 3
+    first_post_id: 1
+captured_output:
+  command: "curl -s 'https://jsonplaceholder.typicode.com/posts?userId=1&_limit=3'"
+  timestamp: "2026-06-19T01:00:00Z"
+  exit_code: 0
+  duration_ms: 450
+  stdout_lines: 158
+  response_sample:
+    - {userId: 1, id: 1, title: "sunt aut facere repellat provident occaecati excepturi optio reprehenderit", body: "quia et suscipit\nsuscipit recusandae consequuntur expedita ..."}
+    - {userId: 1, id: 2, title: "qui est esse", body: "est rerum tempore vitae\nsequi sint nihil ..."}
+  assertion: "response is valid JSON array with 3 posts from userId=1"

@@ -1,0 +1,21 @@
+case: create-post-approval
+runner: mutate
+inputs:
+  resource: posts
+  operation: POST
+  payload: {title: "test", body: "harness test", userId: 1}
+expect:
+  status: success
+  approval_required: true
+  gate_posture: operator-approval
+  output:
+    status_code: 201
+    created_id: 101
+captured_output:
+  command: "curl -s -X POST 'https://jsonplaceholder.typicode.com/posts' -H 'Content-Type: application/json' -d '{\"title\":\"test\",\"body\":\"harness test\",\"userId\":1}'"
+  timestamp: "2026-06-19T01:00:01Z"
+  exit_code: 0
+  duration_ms: 320
+  stdout_lines: 4
+  response: {title: "test", body: "harness test", userId: 1, id: 101}
+  assertion: "POST returned 201 with id=101"

@@ -1,0 +1,15 @@
+case: bad-resource
+runner: read
+inputs:
+  resource: nonexistent
+expect:
+  status: error
+  error_reason: "404: resource not found"
+  handled: true
+captured_output:
+  command: "curl -s -o /dev/null -w '%{http_code}' 'https://jsonplaceholder.typicode.com/nonexistent'"
+  timestamp: "2026-06-19T01:00:02Z"
+  exit_code: 0
+  duration_ms: 280
+  http_status: 404
+  assertion: "preflight caught 404 before execution"
