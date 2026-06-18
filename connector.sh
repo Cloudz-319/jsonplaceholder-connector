@@ -10,7 +10,7 @@ PAYLOAD="${4:-}"
 
 BASE="https://jsonplaceholder.typicode.com"
 URL="$BASE/$RESOURCE"
-[ -n "$ID" ] && URL="$URL/$ID"
+[ -n "$ID" ] && [ "$ID" != "" ] && URL="$URL/$ID"
 
 case "$METHOD" in
   GET)
